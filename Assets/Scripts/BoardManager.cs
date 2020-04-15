@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 public class BoardManager : MonoBehaviour
 {
+    public ChessMan[,] ChessMens { get; set; }
+    public ChessMan SelectedChessman;
+
     private const float tile_size = 1f; // rozmiar pola
     private const float tile_offset = 0.5f; // margines pola
 
@@ -69,9 +72,11 @@ public class BoardManager : MonoBehaviour
                 Vector3.forward * (selectedY + 1) + Vector3.right * (selectedX + 1));
         }
     }
-    private void SpawnChessMan(int prefab_index,Vector3 position)
+    private void SpawnChessMan(int prefab_index,int x, int y)
     {
-        GameObject temp = Instantiate(chessmanPrefabs[prefab_index],position,Quaternion.Euler(0,180,0)) as GameObject; //tworzy obiekt na podstawie prefabu o określonej pozycji
+        GameObject temp = Instantiate(chessmanPrefabs[prefab_index],GetTileCenter(x,y),Quaternion.Euler(0,180,0)) as GameObject; //tworzy obiekt na podstawie prefabu o określonej pozycji
+        ChessMens[x, y] = temp.GetComponent<ChessMan>();
+        ChessMens[x, y].SetPosition(x, y);
         temp.transform.SetParent(transform);
         active_chessmanPrefabs.Add(temp);
     }
@@ -79,44 +84,44 @@ public class BoardManager : MonoBehaviour
     private void SpawnAllChessMans()
     {
         active_chessmanPrefabs = new List<GameObject>();
-
+        ChessMens = new ChessMan[8, 8];
         //Biały team
         #region 
         //Król
-        SpawnChessMan(0, GetTileCenter(3, 0));
+        SpawnChessMan(0,3,0);
         //Królowa
-        SpawnChessMan(1, GetTileCenter(4, 0));
+        SpawnChessMan(1,4,0);
         //wieże
-        SpawnChessMan(2, GetTileCenter(0, 0));
-        SpawnChessMan(2, GetTileCenter(7, 0));
+        SpawnChessMan(2, 0, 0);
+        SpawnChessMan(2, 7, 0);
         //piony
         for(int i =0;i<=7;i++)
-            SpawnChessMan(3, GetTileCenter(i, 1));
+            SpawnChessMan(3,i, 1);
         //konie
-        SpawnChessMan(4, GetTileCenter(1, 0));
-        SpawnChessMan(4, GetTileCenter(6, 0));
+        SpawnChessMan(4, 1, 0);
+        SpawnChessMan(4, 6, 0);
         //gońce
-        SpawnChessMan(5, GetTileCenter(2, 0));
-        SpawnChessMan(5, GetTileCenter(5, 0));
+        SpawnChessMan(5, 2, 0);
+        SpawnChessMan(5, 5, 0);
         #endregion
         //Czarny team
         #region 
         //Król
-        SpawnChessMan(6, GetTileCenter(3, 7));
+        SpawnChessMan(6, 3, 7);
         //Królowa
-        SpawnChessMan(7, GetTileCenter(4, 7));
+        SpawnChessMan(7, 4, 7);
         //wieże
-        SpawnChessMan(8, GetTileCenter(0, 7));
-        SpawnChessMan(8, GetTileCenter(7, 7));
+        SpawnChessMan(8, 0, 7);
+        SpawnChessMan(8, 7, 7);
         //piony
         for (int i = 0; i <= 7; i++)
-            SpawnChessMan(9, GetTileCenter(i, 6));
+            SpawnChessMan(9, i, 6);
         //konie
-        SpawnChessMan(10, GetTileCenter(1, 7));
-        SpawnChessMan(10, GetTileCenter(6, 7));
+        SpawnChessMan(10,1, 7);
+        SpawnChessMan(10, 6, 7);
         //gońce
-        SpawnChessMan(11, GetTileCenter(2, 7));
-        SpawnChessMan(11, GetTileCenter(5, 7));
+        SpawnChessMan(11, 2, 7);
+        SpawnChessMan(11,5, 7);
         #endregion
 
 

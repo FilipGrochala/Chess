@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class King :ChessMan
 {
-    // Start is called before the first frame update
+    
     
 }

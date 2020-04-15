@@ -9,4 +9,10 @@ public abstract class ChessMan : MonoBehaviour
 
     public bool isWhite;
 
+    public void SetPosition(int x,int y)
+    {
+        CurrentX = x;
+        CurrentX = y;
+    }
+
 }
