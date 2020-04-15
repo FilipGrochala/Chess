@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4010933918866702}
   - component: {fileID: 33106061487518736}
   - component: {fileID: 23160403841118764}
+  - component: {fileID: 5603507747048432418}
   m_Layer: 0
   m_Name: PawnLight
   m_TagString: Untagged
@@ -78,3 +79,16 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &5603507747048432418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006356879557798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37d0f65c30df64049949b1664ff12317, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isWhite: 1
