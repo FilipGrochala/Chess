@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class BoardManager : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class BoardManager : MonoBehaviour
     [SerializeField]
     List<GameObject> chessmanPrefabs;
 
+    public bool isWhiteTurn = true; //czyja kolej?
+
     private List<GameObject> active_chessmanPrefabs;
     private void Start()
     {
@@ -26,8 +29,55 @@ public class BoardManager : MonoBehaviour
     {
         UpdateSelection();
         DrawChessboard();
+
+        if(Input.GetMouseButtonDown(0)) //wduszenie lewego przycisku myszy
+        {
+            if(selectedX >= 0 || selectedY >= 0) //sprawdzenie czy kliknięto na planszy
+            {
+                if(SelectedChessman==null) //jeśli nic nie wybrano wybierz danego piona 
+                {
+                    try
+                    {
+                        SelectChessman(selectedX, selectedY);
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
+                else //jeśli wcześniej wybrano piona rusz nim na wybrane pole
+                {
+                    MoveChessman(selectedX,selectedY);
+                }
+
+            }
+        }
         
     }
+
+    private void MoveChessman(int x,int y)
+    {
+        if(SelectedChessman.PossibleMove(x,y)) // można wykonać taki ruch?
+
+        {
+            ChessMens[SelectedChessman.CurrentX, SelectedChessman.CurrentY] = null; //wybrany pion 'znika' z aktualnej pozycji
+            SelectedChessman.transform.position = GetTileCenter(x, y);
+            ChessMens[x, y] = SelectedChessman;
+        }
+
+        SelectedChessman = null; //klinięcie w inne niż możliwe miejsce anuluje wybór
+    }
+
+    private void SelectChessman(int x,int y)
+    {
+        if (ChessMens[x, y] == null) //sprawdzenie czy na wybranej pozycji jest pion
+            return;
+        if (ChessMens[x, y].isWhite != isWhiteTurn) //sprawdzenie czy pion ma kolor danego gracza
+            return;
+
+        SelectedChessman = ChessMens[x, y];
+    }
+
     private void UpdateSelection()
     {
         if (!Camera.main)
@@ -75,10 +125,10 @@ public class BoardManager : MonoBehaviour
     private void SpawnChessMan(int prefab_index,int x, int y)
     {
         GameObject temp = Instantiate(chessmanPrefabs[prefab_index],GetTileCenter(x,y),Quaternion.Euler(0,180,0)) as GameObject; //tworzy obiekt na podstawie prefabu o określonej pozycji
-        ChessMens[x, y] = temp.GetComponent<ChessMan>();
-        ChessMens[x, y].SetPosition(x, y);
-        temp.transform.SetParent(transform);
-        active_chessmanPrefabs.Add(temp);
+        ChessMens[x, y] = temp.GetComponent<ChessMan>(); //zapisanie figury do tablicy figur
+        ChessMens[x, y].SetPosition(x, y); //ustawienie pozycji figury
+        temp.transform.SetParent(transform); 
+        active_chessmanPrefabs.Add(temp); 
     }
 
     private void SpawnAllChessMans()
@@ -130,7 +180,7 @@ public class BoardManager : MonoBehaviour
     private Vector3 GetTileCenter(int x,int y) //umieszczanie figury na środku danego pola
     {
         Vector3 origin = Vector3.zero;
-        origin.x += (tile_size * x) + tile_offset;
+        origin.x += (tile_size * x) + tile_offset; //ustawianie na  srodku
         origin.z += (tile_size * y) + tile_offset;
         return origin;
     }
