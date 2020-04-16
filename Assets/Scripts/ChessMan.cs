@@ -12,7 +12,7 @@ public abstract class ChessMan : MonoBehaviour
     public void SetPosition(int x,int y)
     {
         CurrentX = x;
-        CurrentX = y;
+        CurrentY = y;
     }
     public virtual bool[,] PossibleMove() //virtual oznacza że klasa może zosta nadpisana
     {

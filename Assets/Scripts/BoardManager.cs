@@ -85,7 +85,8 @@ public class BoardManager : MonoBehaviour
             return;
 
         SelectedChessman = ChessMens[x, y];
-        allowedMoves = SelectedChessman.PossibleMove();
+        allowedMoves = ChessMens[x, y].PossibleMove();
+        //allowedMoves = SelectedChessman.PossibleMove();
         BoardHighlitghs.Instance.HighlightAllowedMoves(allowedMoves);
 
 
@@ -111,6 +112,7 @@ public class BoardManager : MonoBehaviour
             selectedX = -1;
             selectedX = -1;
         }
+        Debug.Log(selectedX.ToString() + "," + selectedY.ToString());
     }
     private void DrawChessboard() //pomocnicza funkcja rysująca pole
     {
