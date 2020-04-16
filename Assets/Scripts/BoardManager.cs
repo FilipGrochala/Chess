@@ -62,8 +62,15 @@ public class BoardManager : MonoBehaviour
     private void MoveChessman(int x,int y)
     {
         if(allowedMoves[x,y]) // można wykonać taki ruch?
-
         {
+            ChessMan target = ChessMens[x, y];
+
+
+            if(target != null && target.isWhite != isWhiteTurn) //czy na wybranym polu jest figura i czy należy do gracza?
+            {
+                KillChessMan(target);
+            }
+
             ChessMens[SelectedChessman.CurrentX, SelectedChessman.CurrentY] = null; //wybrany pion 'znika' z aktualnej pozycji
             SelectedChessman.transform.position = GetTileCenter(x, y);
             SelectedChessman.SetPosition(x, y);
@@ -75,6 +82,12 @@ public class BoardManager : MonoBehaviour
         SelectedChessman = null; //klinięcie w inne niż możliwe miejsce anuluje wybór
 
         
+    }
+
+    private void KillChessMan(ChessMan target)
+    {
+        active_chessmanPrefabs.Remove(target.gameObject); //usunięcie z listy aktywnych figur
+        Destroy(target.gameObject); //zniszczenie figury
     }
 
     private void SelectChessman(int x,int y)

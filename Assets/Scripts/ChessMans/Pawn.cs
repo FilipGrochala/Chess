@@ -62,20 +62,20 @@ public class Pawn : ChessMan
         else
         {
             //bicie w lewo
-            if (CurrentX != 0 && CurrentX != 7)
+            if (CurrentX != 0 && CurrentX != 0)
             {
-                c1 = BoardManager.Instance.ChessMens[CurrentX + 1, CurrentY - 1];
-                if (c1 != null && !c1.isWhite)
-                    moves[CurrentX + 1, CurrentY - 1] = true;
+                c1 = BoardManager.Instance.ChessMens[CurrentX - 1, CurrentY - 1];
+                if (c1 != null && c1.isWhite)
+                    moves[CurrentX - 1, CurrentY - 1] = true;
 
             }
 
             //bisie w prawo
-            if (CurrentX != 0 && CurrentX != 7)
+            if (CurrentX != 0 && CurrentX != 0)
             {
-                c1 = BoardManager.Instance.ChessMens[CurrentX - 1, CurrentY - 1];
-                if (c1 != null && !c1.isWhite)
-                    moves[CurrentX - 1, CurrentY - 1] = true;
+                c1 = BoardManager.Instance.ChessMens[CurrentX + 1, CurrentY - 1];
+                if (c1 != null && c1.isWhite)
+                    moves[CurrentX + 1, CurrentY - 1] = true;
             }
 
 
