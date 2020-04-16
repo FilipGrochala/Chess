@@ -6,6 +6,9 @@ using System;
 
 public class BoardManager : MonoBehaviour
 {
+    public static BoardManager Instance { get; set; }
+    private bool[,] allowedMoves;
+
     public ChessMan[,] ChessMens { get; set; }
     public ChessMan SelectedChessman;
 
@@ -23,6 +26,7 @@ public class BoardManager : MonoBehaviour
     private List<GameObject> active_chessmanPrefabs;
     private void Start()
     {
+        Instance = this;
         SpawnAllChessMans();
     }
     private void Update()
@@ -57,15 +61,20 @@ public class BoardManager : MonoBehaviour
 
     private void MoveChessman(int x,int y)
     {
-        if(SelectedChessman.PossibleMove(x,y)) // można wykonać taki ruch?
+        if(allowedMoves[x,y]) // można wykonać taki ruch?
 
         {
             ChessMens[SelectedChessman.CurrentX, SelectedChessman.CurrentY] = null; //wybrany pion 'znika' z aktualnej pozycji
             SelectedChessman.transform.position = GetTileCenter(x, y);
+            SelectedChessman.SetPosition(x, y);
             ChessMens[x, y] = SelectedChessman;
-        }
+            isWhiteTurn = !isWhiteTurn;
 
+        }
+        BoardHighlitghs.Instance.HideAll();
         SelectedChessman = null; //klinięcie w inne niż możliwe miejsce anuluje wybór
+
+        
     }
 
     private void SelectChessman(int x,int y)
@@ -76,6 +85,10 @@ public class BoardManager : MonoBehaviour
             return;
 
         SelectedChessman = ChessMens[x, y];
+        allowedMoves = SelectedChessman.PossibleMove();
+        BoardHighlitghs.Instance.HighlightAllowedMoves(allowedMoves);
+
+
     }
 
     private void UpdateSelection()

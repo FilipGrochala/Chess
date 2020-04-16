@@ -14,9 +14,9 @@ public abstract class ChessMan : MonoBehaviour
         CurrentX = x;
         CurrentX = y;
     }
-    public virtual bool PossibleMove(int x, int y) //virtual oznacza że klasa może zosta nadpisana
+    public virtual bool[,] PossibleMove() //virtual oznacza że klasa może zosta nadpisana
     {
-        return true;
+        return new bool[8,8];
     }
 
 }
