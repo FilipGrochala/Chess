@@ -25,7 +25,7 @@ public class Rook : ChessMan
         {
             newX = CurrentX - (color * i);
             newY = CurrentY;
-            condition_left = isWhite ? (CurrentX != 0 && newX >= 0) : (CurrentX != 7 && newX >=7);
+            condition_left = isWhite ? (CurrentX != 0 && newX >= 0) : (CurrentX != 7 && newX >=7); //ustalanie warunku ograniczającego
 
             if (condition_left  && hit_left ) //ruch w lewo
             {
