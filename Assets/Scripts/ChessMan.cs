@@ -9,6 +9,9 @@ public abstract class ChessMan : MonoBehaviour
 
     public bool isWhite;
 
+    public bool firstmove = true; 
+
+
     public void SetPosition(int x,int y)
     {
         CurrentX = x;
@@ -18,5 +21,7 @@ public abstract class ChessMan : MonoBehaviour
     {
         return new bool[8,8];
     }
+    
+
 
 }

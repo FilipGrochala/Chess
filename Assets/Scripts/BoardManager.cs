@@ -23,7 +23,7 @@ public class BoardManager : MonoBehaviour
 
     public bool isWhiteTurn = true; //czyja kolej?
 
-    private List<GameObject> active_chessmanPrefabs;
+    
     private void Start()
     {
         Instance = this;
@@ -77,6 +77,10 @@ public class BoardManager : MonoBehaviour
             ChessMens[x, y] = SelectedChessman;
             isWhiteTurn = !isWhiteTurn;
 
+            if (SelectedChessman.firstmove) //wykonanie pierwszego ruchu potrzebne przy pionach
+                SelectedChessman.firstmove = false;
+
+
         }
         BoardHighlitghs.Instance.HideAll();
         SelectedChessman = null; //klinięcie w inne niż możliwe miejsce anuluje wybór
@@ -86,7 +90,12 @@ public class BoardManager : MonoBehaviour
 
     private void KillChessMan(ChessMan target)
     {
-        active_chessmanPrefabs.Remove(target.gameObject); //usunięcie z listy aktywnych figur
+        if(target.GetType() == typeof(King)) //jeśli to król zakończ grę
+        {
+
+            return;
+        }
+         //usunięcie z listy aktywnych figur
         Destroy(target.gameObject); //zniszczenie figury
     }
 
@@ -98,8 +107,8 @@ public class BoardManager : MonoBehaviour
             return;
 
         SelectedChessman = ChessMens[x, y];
-        allowedMoves = ChessMens[x, y].PossibleMove();
-        //allowedMoves = SelectedChessman.PossibleMove();
+        
+        allowedMoves = ChessMens[x,y].PossibleMove();
         BoardHighlitghs.Instance.HighlightAllowedMoves(allowedMoves);
 
 
@@ -125,7 +134,7 @@ public class BoardManager : MonoBehaviour
             selectedX = -1;
             selectedX = -1;
         }
-        Debug.Log(selectedX.ToString() + "," + selectedY.ToString());
+        
     }
     private void DrawChessboard() //pomocnicza funkcja rysująca pole
     {
@@ -156,12 +165,12 @@ public class BoardManager : MonoBehaviour
         ChessMens[x, y] = temp.GetComponent<ChessMan>(); //zapisanie figury do tablicy figur
         ChessMens[x, y].SetPosition(x, y); //ustawienie pozycji figury
         temp.transform.SetParent(transform); 
-        active_chessmanPrefabs.Add(temp); 
+        
     }
 
     private void SpawnAllChessMans()
     {
-        active_chessmanPrefabs = new List<GameObject>();
+        
         ChessMens = new ChessMan[8, 8];
         //Biały team
         #region 

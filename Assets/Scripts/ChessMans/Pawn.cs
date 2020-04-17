@@ -11,96 +11,59 @@ public class Pawn : ChessMan
         ChessMan c1, c2;
 
         bool[,] moves = new bool[8, 8];
-        bool firstmove = true;
+
+        bool condition_left = isWhite ? (CurrentX != 0 && CurrentY != 7) : (CurrentX != 0 && CurrentY != 0);//warunki ograniczające pole  nbica
+        bool condition_right = isWhite ? (CurrentX != 7 && CurrentY != 7) : (CurrentX != 7 && CurrentY != 0);
         
 
-        //białe
+        int color = isWhite ? 1 : -1; //ustalanie mnożnika przy ustalaniu pozycji
+
+        //BICIA
         #region
-        if (isWhite)
-        {
             //bicie w lewo
-            if(CurrentX != 0 && CurrentX !=7)
+            if (condition_left)
             {
-                c1 = BoardManager.Instance.ChessMens[CurrentX - 1, CurrentY + 1];
-                if (c1 != null && !c1.isWhite)
-                    moves[CurrentX - 1, CurrentY + 1] = true;
+                c1 = BoardManager.Instance.ChessMens[CurrentX - color, CurrentY + color];
+                if (c1 != null && this.isWhite != c1.isWhite)
+                    moves[CurrentX - color, CurrentY + color] = true;
 
             }
 
             //bisie w prawo
-            if (CurrentX != 0 && CurrentX != 7)
+             if (condition_right)
             {
-                c1 = BoardManager.Instance.ChessMens[CurrentX + 1, CurrentY + 1];
-                if (c1 != null && !c1.isWhite)
-                    moves[CurrentX + 1, CurrentY + 1] = true;
+                c1 = BoardManager.Instance.ChessMens[CurrentX + color, CurrentY + color];
+                if (c1 != null && this.isWhite != c1.isWhite)
+                    moves[CurrentX + color, CurrentY + color] = true;
             }
+        
+        #endregion
+        //przód
+        #region
+        //przód
+        if (!firstmove)
+        {
+            c1 = BoardManager.Instance.ChessMens[CurrentX, CurrentY + color];
+            if (c1 == null)
+                moves[CurrentX, CurrentY + color] = true;
+        }
 
-
-            //przód
-            if (CurrentY!=1)
+        
+        if (firstmove)
+        {
+            c1 = BoardManager.Instance.ChessMens[CurrentX, CurrentY + color];
+            c2 = BoardManager.Instance.ChessMens[CurrentX, CurrentY + (2*color)];
+            if (c1 == null && c2 == null)
             {
-                c1 = BoardManager.Instance.ChessMens[CurrentX, CurrentY + 1];
-                if (c1 == null) 
-                    moves[CurrentX, CurrentY+1] = true;
-            }
-
-            //pierwszy ruch
-            if (CurrentY==1)
-            {
-                c1 = BoardManager.Instance.ChessMens[CurrentX, CurrentY + 1];
-                c2 = BoardManager.Instance.ChessMens[CurrentX, CurrentY + 2];
-                if (c1 == null && c2==null)
-                {
-                    moves[CurrentX, CurrentY + 2] = true;
-                }
+                moves[CurrentX, CurrentY + (2 * color)] = true;
             }
         }
         #endregion
 
-        //czarne
-        #region
-        else
-        {
-            //bicie w lewo
-            if (CurrentX != 0 && CurrentX != 0)
-            {
-                c1 = BoardManager.Instance.ChessMens[CurrentX - 1, CurrentY - 1];
-                if (c1 != null && c1.isWhite)
-                    moves[CurrentX - 1, CurrentY - 1] = true;
+        return moves;
+       
 
-            }
-
-            //bisie w prawo
-            if (CurrentX != 0 && CurrentX != 0)
-            {
-                c1 = BoardManager.Instance.ChessMens[CurrentX + 1, CurrentY - 1];
-                if (c1 != null && c1.isWhite)
-                    moves[CurrentX + 1, CurrentY - 1] = true;
-            }
-
-
-            //przód
-            if (CurrentY!=6)
-            {
-                c1 = BoardManager.Instance.ChessMens[CurrentX, CurrentY - 1];
-                if (c1 == null)
-                    moves[CurrentX, CurrentY - 1] = true;
-            }
-
-            //pierwszy ruch
-            if (CurrentY==6)
-            {
-                c1 = BoardManager.Instance.ChessMens[CurrentX, CurrentY - 2];
-                if (c1 == null)
-                {
-                    moves[CurrentX, CurrentY - 2] = true;
-                    
-                }
-            }
-        }
-            #endregion
-
-            return moves;
+            
     }
 
 }
