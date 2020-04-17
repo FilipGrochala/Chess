@@ -58,6 +58,9 @@ public class Pawn : ChessMan
                 moves[CurrentX, CurrentY + (2 * color)] = true;
             }
         }
+
+       
+
         #endregion
 
         return moves;

@@ -202,7 +202,11 @@ public class BoardManager : MonoBehaviour
         SpawnChessMan(8, 7, 7);
         //piony
         for (int i = 0; i <= 7; i++)
+        {
+            if(i!=0 && i!=7)
             SpawnChessMan(9, i, 6);
+        }
+            
         //konie
         SpawnChessMan(10,1, 7);
         SpawnChessMan(10, 6, 7);
