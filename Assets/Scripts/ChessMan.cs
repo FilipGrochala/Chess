@@ -22,6 +22,8 @@ public abstract class ChessMan : MonoBehaviour
         return new bool[8,8];
     }
     
+   
+    
 
 
 }
