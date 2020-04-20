@@ -6,6 +6,9 @@ using System;
 
 public class BoardManager : MonoBehaviour
 {
+
+    
+
     public static BoardManager Instance { get; set; }
     private bool[,] allowedMoves;
 
@@ -17,17 +20,16 @@ public class BoardManager : MonoBehaviour
 
     private int selectedX = -1; //wybrane pole
     private int selectedY = -1;
-
-    [SerializeField]
-    List<GameObject> chessmanPrefabs;
+    
 
     public bool isWhiteTurn = true; //czyja kolej?
 
     
+
     private void Start()
     {
         Instance = this;
-        SpawnAllChessMans();
+        ChessMens = new ChessMan[8, 8];
     }
     private void Update()
     {
@@ -120,6 +122,7 @@ public class BoardManager : MonoBehaviour
             return;
 
         RaycastHit hit;
+
         if (Physics.Raycast(
             Camera.main.ScreenPointToRay(Input.mousePosition),
             out hit,
@@ -159,64 +162,16 @@ public class BoardManager : MonoBehaviour
                 Vector3.forward * (selectedY + 1) + Vector3.right * (selectedX + 1));
         }
     }
-    private void SpawnChessMan(int prefab_index,int x, int y)
+
+    public void Spawn(GameObject prefab, int x, int y)
     {
-        GameObject temp = Instantiate(chessmanPrefabs[prefab_index],GetTileCenter(x,y),Quaternion.Euler(0,180,0)) as GameObject; //tworzy obiekt na podstawie prefabu o określonej pozycji
+        GameObject temp = Instantiate(prefab, GetTileCenter(x,y), Quaternion.Euler(0, 180, 0)) as GameObject; //tworzy obiekt na podstawie prefabu o określonej pozycji
         ChessMens[x, y] = temp.GetComponent<ChessMan>(); //zapisanie figury do tablicy figur
         ChessMens[x, y].SetPosition(x, y); //ustawienie pozycji figury
-        temp.transform.SetParent(transform); 
-        
-    }
-
-    private void SpawnAllChessMans()
-    {
-        
-        ChessMens = new ChessMan[8, 8];
-        //Biały team
-        #region 
-        //Król
-        SpawnChessMan(0,3,0);
-        //Królowa
-        SpawnChessMan(1,4,0);
-        //wieże
-        SpawnChessMan(2, 0, 0);
-        SpawnChessMan(2, 7, 0);
-        //piony
-        for(int i =0;i<=7;i++)
-            SpawnChessMan(3,i, 1);
-        //konie
-        SpawnChessMan(4, 1, 0);
-        SpawnChessMan(4, 6, 0);
-        //gońce
-        SpawnChessMan(5, 2, 0);
-        SpawnChessMan(5, 5, 0);
-        #endregion
-        //Czarny team
-        #region 
-        //Król
-        SpawnChessMan(6, 3, 7);
-        //Królowa
-        SpawnChessMan(7, 4, 7);
-        //wieże
-        SpawnChessMan(8, 0, 7);
-        SpawnChessMan(8, 7, 7);
-        //piony
-        for (int i = 0; i <= 7; i++)
-        {
-            if(i!=0 && i!=7)
-            SpawnChessMan(9, i, 6);
-        }
-            
-        //konie
-        SpawnChessMan(10,1, 7);
-        SpawnChessMan(10, 6, 7);
-        //gońce
-        SpawnChessMan(11, 2, 7);
-        SpawnChessMan(11,5, 7);
-        #endregion
-
+        temp.transform.SetParent(transform);
 
     }
+
 
     private Vector3 GetTileCenter(int x,int y) //umieszczanie figury na środku danego pola
     {
