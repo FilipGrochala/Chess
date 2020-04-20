@@ -21,9 +21,25 @@ public abstract class ChessMan : MonoBehaviour
     {
         return new bool[8,8];
     }
-    
-   
-    
+
+    public static void CheckMove(ChessMan current_chess, bool[,] arr, int _newX, int _newY, bool[] _hits, int hit)
+    {
+
+        ChessMan c;
+        c = BoardManager.Instance.ChessMens[_newX, _newY];
+        if (c == null)
+            arr[_newX, _newY] = true;
+        if (c != null && current_chess.isWhite == c.isWhite) //jeśli na lini jest sojusznik nie można ruszyć dalej
+            _hits[hit] = false;
+        if (c != null && current_chess.isWhite != c.isWhite) //jeśli na lini jest przeciwnik zbij go
+        {
+            arr[_newX, _newY] = true;
+            _hits[hit] = false;
+        }
+
+    }
+
+
 
 
 }

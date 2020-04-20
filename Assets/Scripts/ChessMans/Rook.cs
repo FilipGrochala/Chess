@@ -9,13 +9,12 @@ public class Rook : ChessMan
     public override bool[,] PossibleMove()
     {
         bool[,] moves = new bool[8, 8];
-        RookMovement(moves, isWhite, CurrentX, CurrentY, this);
-
+        RookMovement(moves);
         return moves;
 
     }
 
-    public void RookMovement(bool[,] _moves,bool _isWhite,int _CurrentX, int _CurrentY, ChessMan chess)
+    public void RookMovement(bool[,] _moves)
     {
         for (int i = 0; i < hits.Length; i++)
             hits[i] = true;
@@ -29,45 +28,45 @@ public class Rook : ChessMan
        
         
 
-        int color = _isWhite ? 1 : -1;
+        int color = isWhite ? 1 : -1;
 
         for (int i = 1; i < 8; i++)
         {
-            newX = _CurrentX - (color * i);
-            newY = _CurrentY;
-            condition_left = _isWhite ? (_CurrentX != 0 && newX >= 0) : (_CurrentX != 7 && newX >= 7); //ustalanie warunku ograniczającego
+            newX = CurrentX - (color * i);
+            newY = CurrentY;
+            condition_left = isWhite ? (CurrentX != 0 && newX >= 0) : (CurrentX != 7 && newX >= 7); //ustalanie warunku ograniczającego
 
             if (condition_left && hits[0]) //ruch w lewo
             {
-                CheckMove(chess,_moves,newX,newY, 0);
+                CheckMove(this,_moves,newX,newY, 0);
                
             }
             
-            newX = _CurrentX + (color * i);
-            newY = _CurrentY;
-            condition_right = _isWhite ? (_CurrentX != 7 && newX <= 7) : (_CurrentX != 0 && newX >= 0);
+            newX = CurrentX + (color * i);
+            newY = CurrentY;
+            condition_right = isWhite ? (CurrentX != 7 && newX <= 7) : (CurrentX != 0 && newX >= 0);
 
             if (condition_right && hits[1])  //ruch w prawo
             {
-                CheckMove(chess, _moves, newX, newY, 1);
+                CheckMove(this, _moves, newX, newY, 1);
             }
 
-            newX = _CurrentX;
-            newY = _CurrentY + (color * i);
-            condition_up = _isWhite ? (_CurrentY != 7 && newY <= 7) : (_CurrentY != 0 && newY >= 0);
+            newX = CurrentX;
+            newY =CurrentY + (color * i);
+            condition_up = isWhite ? (CurrentY != 7 && newY <= 7) : (CurrentY != 0 && newY >= 0);
 
             if (condition_up && hits[2]) //ruch w górę
             {
-                CheckMove(chess, _moves, newX, newY, 2);
+                CheckMove(this, _moves, newX, newY, 2);
             }
 
-            newX = _CurrentX;
-            newY = _CurrentY - (color * i);
-            condition_down = _isWhite ? (_CurrentY != 0 && newY >= 0) : (_CurrentY != 7 && newY <= 0);
+            newX = CurrentX;
+            newY = CurrentY - (color * i);
+            condition_down = isWhite ? (CurrentY != 0 && newY >= 0) : (CurrentY != 7 && newY <= 0);
 
             if (condition_down && hits[3]) //ruch w dół
             {
-                CheckMove(chess, _moves, newX, newY, 3);
+                CheckMove(this, _moves, newX, newY, 3);
             }
 
 
