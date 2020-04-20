@@ -7,11 +7,8 @@ using UnityEngine;
 public class Card : MonoBehaviour
 {
     public GameObject prefab;
-
-    public event Action onClicked;
-
     Camera camera;
-
+    public event Action onClicked;
 
     void Awake()
     {
@@ -22,17 +19,28 @@ public class Card : MonoBehaviour
         Ray ray = camera.ScreenPointToRay(Input.mousePosition); // jeżeli po wciśnięciu przycisku kursor będzie nad kartą
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, 25.0f,
-            LayerMask.GetMask("Cards")))
+        if (Physics.Raycast(ray, out hit))
         {
-            Debug.Log("click");
 
             if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log("click");
-                onClicked.Invoke();
+                try
+                {
+                    if(onClicked!=null)
+                        hit.transform.gameObject.GetComponent<Card>().onClicked.Invoke();
+                }
+                catch(Exception e)
+                { }
+
             }
 
         }
     }
+    //private void SpawnMonster()
+    //{
+    //    var board = FindObjectOfType<BoardManager>();
+    //    board.Spawn(prefab, 1, 1);
+    //    Destroy(this);
+
+    //}
 }

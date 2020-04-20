@@ -7,7 +7,7 @@ using System;
 public class BoardManager : MonoBehaviour
 {
 
-    
+
 
     public static BoardManager Instance { get; set; }
     private bool[,] allowedMoves;
@@ -20,27 +20,28 @@ public class BoardManager : MonoBehaviour
 
     private int selectedX = -1; //wybrane pole
     private int selectedY = -1;
-    
+
 
     public bool isWhiteTurn = true; //czyja kolej?
 
-    
+
 
     private void Start()
     {
         Instance = this;
         ChessMens = new ChessMan[8, 8];
+        UpdateSpawn();
     }
     private void Update()
     {
         UpdateSelection();
         DrawChessboard();
 
-        if(Input.GetMouseButtonDown(0)) //wduszenie lewego przycisku myszy
+        if (Input.GetMouseButtonDown(0)) //wduszenie lewego przycisku myszy
         {
-            if(selectedX >= 0 || selectedY >= 0) //sprawdzenie czy kliknięto na planszy
+            if (selectedX >= 0 || selectedY >= 0) //sprawdzenie czy kliknięto na planszy
             {
-                if(SelectedChessman==null) //jeśli nic nie wybrano wybierz danego piona 
+                if (SelectedChessman == null) //jeśli nic nie wybrano wybierz danego piona 
                 {
                     try
                     {
@@ -53,22 +54,22 @@ public class BoardManager : MonoBehaviour
                 }
                 else //jeśli wcześniej wybrano piona rusz nim na wybrane pole
                 {
-                    MoveChessman(selectedX,selectedY);
+                    MoveChessman(selectedX, selectedY);
                 }
 
             }
         }
-        
+
     }
 
-    private void MoveChessman(int x,int y)
+    private void MoveChessman(int x, int y)
     {
-        if(allowedMoves[x,y]) // można wykonać taki ruch?
+        if (allowedMoves[x, y]) // można wykonać taki ruch?
         {
             ChessMan target = ChessMens[x, y];
 
 
-            if(target != null && target.isWhite != isWhiteTurn) //czy na wybranym polu jest figura i czy należy do gracza?
+            if (target != null && target.isWhite != isWhiteTurn) //czy na wybranym polu jest figura i czy należy do gracza?
             {
                 KillChessMan(target);
             }
@@ -87,21 +88,21 @@ public class BoardManager : MonoBehaviour
         BoardHighlitghs.Instance.HideAll();
         SelectedChessman = null; //klinięcie w inne niż możliwe miejsce anuluje wybór
 
-        
+
     }
 
     private void KillChessMan(ChessMan target)
     {
-        if(target.GetType() == typeof(King)) //jeśli to król zakończ grę
+        if (target.GetType() == typeof(King)) //jeśli to król zakończ grę
         {
 
             return;
         }
-         //usunięcie z listy aktywnych figur
+        //usunięcie z listy aktywnych figur
         Destroy(target.gameObject); //zniszczenie figury
     }
 
-    private void SelectChessman(int x,int y)
+    private void SelectChessman(int x, int y)
     {
         if (ChessMens[x, y] == null) //sprawdzenie czy na wybranej pozycji jest pion
             return;
@@ -109,8 +110,8 @@ public class BoardManager : MonoBehaviour
             return;
 
         SelectedChessman = ChessMens[x, y];
-        
-        allowedMoves = ChessMens[x,y].PossibleMove();
+
+        allowedMoves = ChessMens[x, y].PossibleMove();
         BoardHighlitghs.Instance.HighlightAllowedMoves(allowedMoves);
 
 
@@ -128,8 +129,8 @@ public class BoardManager : MonoBehaviour
             out hit,
             25.0f,
             LayerMask.GetMask("ChessPlane"))) //warunek określający nad jakim polem gracz ma umieszczoną myszkę
-            {
-            selectedX = (int)hit.point.x; 
+        {
+            selectedX = (int)hit.point.x;
             selectedY = (int)hit.point.z;
         }
         else
@@ -137,14 +138,14 @@ public class BoardManager : MonoBehaviour
             selectedX = -1;
             selectedX = -1;
         }
-        
+
     }
     private void DrawChessboard() //pomocnicza funkcja rysująca pole
     {
         Vector3 width_line = Vector3.right * 8;
         Vector3 height_line = Vector3.forward * 8;
 
-        for(int i = 0; i<=8;i++)
+        for (int i = 0; i <= 8; i++)
         {
             Vector3 start = Vector3.forward * i;
             Debug.DrawLine(start, start + width_line);
@@ -155,7 +156,7 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        if(selectedX >= 0 && selectedY >=0) //coś zaznaczono
+        if (selectedX >= 0 && selectedY >= 0) //coś zaznaczono
         {
             Debug.DrawLine(
                 Vector3.forward * selectedY + Vector3.right * selectedX,
@@ -163,17 +164,20 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public void Spawn(GameObject prefab, int x, int y)
+    private void Spawn(GameObject prefab, int x, int y)
     {
-        GameObject temp = Instantiate(prefab, GetTileCenter(x,y), Quaternion.Euler(0, 180, 0)) as GameObject; //tworzy obiekt na podstawie prefabu o określonej pozycji
-        ChessMens[x, y] = temp.GetComponent<ChessMan>(); //zapisanie figury do tablicy figur
-        ChessMens[x, y].SetPosition(x, y); //ustawienie pozycji figury
-        temp.transform.SetParent(transform);
+        if (ChessMens[x, y] == null) //jezeli na wybranym polu nie ma figuty
+        {
+            GameObject temp = Instantiate(prefab, GetTileCenter(x, y), Quaternion.Euler(0, 180, 0)) as GameObject; //tworzy obiekt na podstawie prefabu o określonej pozycji
+            ChessMens[x, y] = temp.GetComponent<ChessMan>(); //zapisanie figury do tablicy figur
+            ChessMens[x, y].SetPosition(x, y); //ustawienie pozycji figury
+            temp.transform.SetParent(transform);
+        }
 
     }
 
 
-    private Vector3 GetTileCenter(int x,int y) //umieszczanie figury na środku danego pola
+    private Vector3 GetTileCenter(int x, int y) //umieszczanie figury na środku danego pola
     {
         Vector3 origin = Vector3.zero;
         origin.x += (tile_size * x) + tile_offset; //ustawianie na  srodku
@@ -181,4 +185,50 @@ public class BoardManager : MonoBehaviour
         return origin;
     }
 
+    private void UpdateSpawn()
+    {
+        allowedMoves = new bool[8, 8];   //można spawnować tylko na dwóch pierwszych wierszach
+        for (int i = 0; i <= 7; i++)
+            for (int j = 0; j <= 1; j++)
+                allowedMoves[i, j] = true;
+
+        var Deck = FindObjectOfType<CardManager>().deck;
+
+        foreach (Card card in Deck)
+        {
+            card.onClicked += () =>
+            {
+                BoardHighlitghs.Instance.HighlightAllowedMoves(allowedMoves);
+                StartCoroutine(WaitForSpawn(card.prefab));
+
+                
+
+
+            };
+
+        }
+
+    }
+
+    IEnumerator WaitForSpawn(GameObject chessMan)
+    {
+        while (true)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                RaycastHit hit = new RaycastHit();
+                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
+                {
+                    if (selectedX >= 0 && selectedY >=0 && selectedY <= 1)
+                    {
+                        Spawn(chessMan,selectedX, selectedY);
+                        
+                    }
+                }
+            }
+            yield return null;
+        }
+
+
+    }
 }
