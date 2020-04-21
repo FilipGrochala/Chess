@@ -37,7 +37,7 @@ public class Bishop : ChessMan
         {
             newX = CurrentX - (i * color);
             newY = CurrentY + (i * color);
-            condition_left_up = isWhite ? (CurrentX != 0 && CurrentY != 7 && newX >= 0 && newY <= 7) : (CurrentX != 0 && CurrentY != 0 && newX <= 7 && newY >= 0);
+            condition_left_up = isWhite ? (newX >= 0 && newY <= 7) : (newX <= 7 && newY >= 0);
 
             if (condition_left_up && hits[0]) //ruch w lewo
             {
@@ -47,7 +47,7 @@ public class Bishop : ChessMan
 
             newX = CurrentX + (i * color);
             newY = CurrentY + (i * color);
-            condition_right_up = isWhite ? (CurrentX != 7 && CurrentY != 7 && newX <= 7 && newY <= 7) : (CurrentX != 7 && CurrentY != 0 && newX >= 0 && newY >= 0);
+            condition_right_up = isWhite ? ( newX <= 7 && newY <= 7) : (newX >= 0 && newY >= 0);
 
             if (condition_right_up && hits[1]) //ruch w prawo
             {
@@ -57,7 +57,7 @@ public class Bishop : ChessMan
             }
             newX = CurrentX - (i * color);
             newY = CurrentY - (i * color);
-            condition_left_down = isWhite ? (CurrentX != 0 && CurrentY != 0 && newX >= 0 && newY >= 0) : (CurrentX != 7 && CurrentY != 7 && newX <= 7 && newY <= 7);
+            condition_left_down = isWhite ? ( newX >= 0 && newY >= 0) : (newX <= 7 && newY <= 7);
 
             if (condition_left_down && hits[2]) //ruch w górę
             {

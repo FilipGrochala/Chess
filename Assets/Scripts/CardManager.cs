@@ -12,8 +12,9 @@ public class CardManager : MonoBehaviour
     ChessMan[,] ChessMens;
 
     bool[,] SpawnAllowed;
+
+ 
     
-   
 
     private void Spawn(GameObject prefab, int x, int y)
     {
@@ -42,10 +43,18 @@ public class CardManager : MonoBehaviour
 
         foreach (Card card in deck)
         {
+       
+
             card.onClicked += () =>
             {
-                BoardHighlitghs.Instance.HighlightAllowedMoves(isSpawnAllowed());
-                StartCoroutine(WaitForSpawn(card));
+                if (isWhite == BoardManager.Instance.isWhiteTurn)
+                {
+
+
+                    BoardHighlitghs.Instance.HideAll();
+                    BoardHighlitghs.Instance.HighlightAllowedMoves(isSpawnAllowed());
+                    StartCoroutine(WaitForSpawn(card));
+                }
 
             };
 
@@ -67,7 +76,7 @@ public class CardManager : MonoBehaviour
                     int selectedY = BoardManager.Instance.selectedY;
                     SpawnAllowed = isSpawnAllowed();
 
-                    if (selectedX >= 0 && selectedY >=0 && SpawnAllowed[selectedX,selectedY] == true && isWhite==BoardManager.Instance.isWhiteTurn)
+                    if (selectedX >= 0 && selectedY >=0 && SpawnAllowed[selectedX,selectedY] == true)
                     {
 
                         Spawn(card.prefab, selectedX, selectedY);
@@ -84,6 +93,12 @@ public class CardManager : MonoBehaviour
 
 
     }
+  
+               
+
+            
+     
+
 
     private bool[,] isSpawnAllowed()
     {

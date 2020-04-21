@@ -9,6 +9,7 @@ public class Card : MonoBehaviour
     public GameObject prefab;
     Camera camera;
     public event Action onClicked;
+    
 
     void Awake()
     {
@@ -21,6 +22,7 @@ public class Card : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit))
         {
+            
 
             if (Input.GetMouseButtonDown(0))
             {

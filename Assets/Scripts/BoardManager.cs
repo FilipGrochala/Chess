@@ -41,9 +41,7 @@ public class BoardManager : MonoBehaviour
     {
         UpdateSelection();
         DrawChessboard();
-        Debug.Log(isWhiteTurn);
-        //Debug.Log(number_of_move);
-        Debug.Log(isWhiteTurn);
+       
 
         if (Input.GetMouseButtonDown(0)) //wduszenie lewego przycisku myszy
         {
@@ -103,8 +101,8 @@ public class BoardManager : MonoBehaviour
     {
         if (target.GetType() == typeof(King)) //jeśli to król zakończ grę
         {
-
-            return;
+            Endgame();
+            
         }
         //usunięcie z listy aktywnych figur
         Destroy(target.gameObject); //zniszczenie figury
@@ -208,6 +206,12 @@ public class BoardManager : MonoBehaviour
 
         
         }
+
+    private void Endgame()
+    {
+     
+        Debug.Log("Wygrana!");
+    }
     
 
 

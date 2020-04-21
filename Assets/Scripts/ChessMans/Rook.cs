@@ -34,7 +34,7 @@ public class Rook : ChessMan
         {
             newX = CurrentX - (color * i);
             newY = CurrentY;
-            condition_left = isWhite ? (CurrentX != 0 && newX >= 0) : (CurrentX != 7 && newX >= 7); //ustalanie warunku ograniczającego
+            condition_left = isWhite ? newX >= 0 :  newX <= 7; //ustalanie warunku ograniczającego
 
             if (condition_left && hits[0]) //ruch w lewo
             {
@@ -44,7 +44,7 @@ public class Rook : ChessMan
             
             newX = CurrentX + (color * i);
             newY = CurrentY;
-            condition_right = isWhite ? (CurrentX != 7 && newX <= 7) : (CurrentX != 0 && newX >= 0);
+            condition_right = isWhite ?  newX <= 7 : newX >= 0;
 
             if (condition_right && hits[1])  //ruch w prawo
             {
@@ -53,7 +53,7 @@ public class Rook : ChessMan
 
             newX = CurrentX;
             newY =CurrentY + (color * i);
-            condition_up = isWhite ? (CurrentY != 7 && newY <= 7) : (CurrentY != 0 && newY >= 0);
+            condition_up = isWhite ?  newY <= 7 :  newY >= 0;
 
             if (condition_up && hits[2]) //ruch w górę
             {
@@ -62,7 +62,7 @@ public class Rook : ChessMan
 
             newX = CurrentX;
             newY = CurrentY - (color * i);
-            condition_down = isWhite ? (CurrentY != 0 && newY >= 0) : (CurrentY != 7 && newY <= 0);
+            condition_down = isWhite ?  newY >= 0 :  newY <= 7;
 
             if (condition_down && hits[3]) //ruch w dół
             {
