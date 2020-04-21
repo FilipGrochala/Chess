@@ -15,27 +15,35 @@ public class BoardManager : MonoBehaviour
     public ChessMan[,] ChessMens { get; set; }
     public ChessMan SelectedChessman;
 
-    private const float tile_size = 1f; // rozmiar pola
-    private const float tile_offset = 0.5f; // margines pola
+   
 
-    private int selectedX = -1; //wybrane pole
-    private int selectedY = -1;
+    public int selectedX = -1; //wybrane pole
+    public int selectedY = -1;
 
 
     public bool isWhiteTurn = true; //czyja kolej?
+    int number_of_move = 0;
 
+    [SerializeField]
+    CardManager WhiteDeck;
+    [SerializeField]
+    CardManager BlackDeck;
 
 
     private void Start()
     {
         Instance = this;
         ChessMens = new ChessMan[8, 8];
-        UpdateSpawn();
+        WhiteDeck.UpdateSpawn(ChessMens);
+        BlackDeck.UpdateSpawn(ChessMens);
     }
     private void Update()
     {
         UpdateSelection();
         DrawChessboard();
+        Debug.Log(isWhiteTurn);
+        //Debug.Log(number_of_move);
+        Debug.Log(isWhiteTurn);
 
         if (Input.GetMouseButtonDown(0)) //wduszenie lewego przycisku myszy
         {
@@ -78,7 +86,7 @@ public class BoardManager : MonoBehaviour
             SelectedChessman.transform.position = GetTileCenter(x, y);
             SelectedChessman.SetPosition(x, y);
             ChessMens[x, y] = SelectedChessman;
-            isWhiteTurn = !isWhiteTurn;
+            UpdateMove();
 
             if (SelectedChessman.firstmove) //wykonanie pierwszego ruchu potrzebne przy pionach
                 SelectedChessman.firstmove = false;
@@ -164,71 +172,43 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    private void Spawn(GameObject prefab, int x, int y)
-    {
-        if (ChessMens[x, y] == null) //jezeli na wybranym polu nie ma figuty
-        {
-            GameObject temp = Instantiate(prefab, GetTileCenter(x, y), Quaternion.Euler(0, 180, 0)) as GameObject; //tworzy obiekt na podstawie prefabu o określonej pozycji
-            ChessMens[x, y] = temp.GetComponent<ChessMan>(); //zapisanie figury do tablicy figur
-            ChessMens[x, y].SetPosition(x, y); //ustawienie pozycji figury
-            temp.transform.SetParent(transform);
-        }
+    //private void Spawn(GameObject prefab, int x, int y)
+    //{
+    //    if (ChessMens[x, y] == null) //jezeli na wybranym polu nie ma figuty
+    //    {
+    //        GameObject temp = Instantiate(prefab, GetTileCenter(x, y), Quaternion.Euler(0, 180, 0)) as GameObject; //tworzy obiekt na podstawie prefabu o określonej pozycji
+    //        ChessMens[x, y] = temp.GetComponent<ChessMan>(); //zapisanie figury do tablicy figur
+    //        ChessMens[x, y].SetPosition(x, y); //ustawienie pozycji figury
+    //        temp.transform.SetParent(transform);
+    //    }
 
-    }
+    //}
 
 
     private Vector3 GetTileCenter(int x, int y) //umieszczanie figury na środku danego pola
     {
         Vector3 origin = Vector3.zero;
-        origin.x += (tile_size * x) + tile_offset; //ustawianie na  srodku
-        origin.z += (tile_size * y) + tile_offset;
+        origin.x += (1 * x) + 0.5f; //ustawianie na  srodku
+        origin.z += (1 * y) + 0.5f;
         return origin;
     }
 
-    private void UpdateSpawn()
-    {
-        allowedMoves = new bool[8, 8];   //można spawnować tylko na dwóch pierwszych wierszach
-        for (int i = 0; i <= 7; i++)
-            for (int j = 0; j <= 1; j++)
-                allowedMoves[i, j] = true;
+    
 
-        var Deck = FindObjectOfType<CardManager>().deck;
-
-        foreach (Card card in Deck)
+    public void UpdateMove()
         {
-            card.onClicked += () =>
+            if (number_of_move < 2)
+            number_of_move++;
+
+            if (number_of_move == 2)
             {
-                BoardHighlitghs.Instance.HighlightAllowedMoves(allowedMoves);
-                StartCoroutine(WaitForSpawn(card.prefab));
-
-                
-
-
-            };
-
-        }
-
-    }
-
-    IEnumerator WaitForSpawn(GameObject chessMan)
-    {
-        while (true)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                RaycastHit hit = new RaycastHit();
-                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
-                {
-                    if (selectedX >= 0 && selectedY >=0 && selectedY <= 1)
-                    {
-                        Spawn(chessMan,selectedX, selectedY);
-                        
-                    }
-                }
+            isWhiteTurn = !isWhiteTurn;
+            number_of_move = 0;
             }
-            yield return null;
+
+        
         }
+    
 
 
-    }
 }

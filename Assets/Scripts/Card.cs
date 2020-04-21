@@ -36,11 +36,5 @@ public class Card : MonoBehaviour
 
         }
     }
-    //private void SpawnMonster()
-    //{
-    //    var board = FindObjectOfType<BoardManager>();
-    //    board.Spawn(prefab, 1, 1);
-    //    Destroy(this);
-
-    //}
+   
 }
