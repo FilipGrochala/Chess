@@ -37,22 +37,18 @@ public class CardManager : MonoBehaviour
         return origin;
     }
 
-    public void UpdateSpawn(ChessMan[,] _chessMens)
+    public void UpdateSpawn(ChessMan[,] _chessMens) //funkca subskrybująca akcję
     {
         ChessMens = _chessMens;
 
         foreach (Card card in deck)
         {
-       
-
             card.onClicked += () =>
             {
                 if (isWhite == BoardManager.Instance.isWhiteTurn)
                 {
-
-
                     BoardHighlitghs.Instance.HideAll();
-                    BoardHighlitghs.Instance.HighlightAllowedMoves(isSpawnAllowed());
+                    BoardHighlitghs.Instance.HighlightAllowedMoves(isSpawnAllowed()); //podaje możliwe pola do spawnu
                     StartCoroutine(WaitForSpawn(card));
                 }
 
@@ -66,40 +62,35 @@ public class CardManager : MonoBehaviour
     {
         while (true)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0)) //jeśli naciśnięto myszkę
             {
 
                 RaycastHit hit = new RaycastHit();
-                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
+                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit)) //jeśli "promień" trafił na obiekt
                 {
-                    int selectedX = BoardManager.Instance.selectedX;
+                    int selectedX = BoardManager.Instance.selectedX; //odczyruje pozycje
                     int selectedY = BoardManager.Instance.selectedY;
-                    SpawnAllowed = isSpawnAllowed();
 
-                    if (selectedX >= 0 && selectedY >=0 && SpawnAllowed[selectedX,selectedY] == true)
+                    SpawnAllowed = isSpawnAllowed(); //pobiera możliwe pola
+
+                    if (selectedX >= 0 && selectedY >=0 && SpawnAllowed[selectedX,selectedY] == true) //czy można spawnować
                     {
 
-                        Spawn(card.prefab, selectedX, selectedY);
+                        Spawn(card.prefab, selectedX, selectedY);  
                         BoardHighlitghs.Instance.HideAll();
                         card.prefab = null;
-                        Destroy(card.gameObject);
-                        BoardManager.Instance.UpdateMove();
+                        Destroy(card.gameObject); 
+                        BoardManager.Instance.UpdateMove(); //wykonano ruch
 
                     }
                 }
             }
-            yield return null;
+            yield return null; //jeśli nie naciśnięto czekaj
         }
 
 
     }
   
-               
-
-            
-     
-
-
     private bool[,] isSpawnAllowed()
     {
        int less_than = isWhite ? 1 : 7;

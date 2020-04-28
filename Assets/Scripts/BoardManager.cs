@@ -170,17 +170,7 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    //private void Spawn(GameObject prefab, int x, int y)
-    //{
-    //    if (ChessMens[x, y] == null) //jezeli na wybranym polu nie ma figuty
-    //    {
-    //        GameObject temp = Instantiate(prefab, GetTileCenter(x, y), Quaternion.Euler(0, 180, 0)) as GameObject; //tworzy obiekt na podstawie prefabu o określonej pozycji
-    //        ChessMens[x, y] = temp.GetComponent<ChessMan>(); //zapisanie figury do tablicy figur
-    //        ChessMens[x, y].SetPosition(x, y); //ustawienie pozycji figury
-    //        temp.transform.SetParent(transform);
-    //    }
-
-    //}
+    
 
 
     private Vector3 GetTileCenter(int x, int y) //umieszczanie figury na środku danego pola
@@ -193,9 +183,9 @@ public class BoardManager : MonoBehaviour
 
     
 
-    public void UpdateMove()
+    public void UpdateMove() //funkcja przełącza aktywnego gracza
         {
-            if (number_of_move < 2)
+            if (number_of_move < 2) 
             number_of_move++;
 
             if (number_of_move == 2)
