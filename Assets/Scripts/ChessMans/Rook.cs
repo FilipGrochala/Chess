@@ -4,33 +4,29 @@ using UnityEngine;
 
 public class Rook : ChessMan
 {
-    bool[] hits = new bool[4];
+   
 
-    public override bool[,] PossibleMove()
+    public override void UpdateMove()
     {
-        bool[,] moves = new bool[8, 8];
-        RookMovement(moves);
-        return moves;
-
+        possibleMoves = new bool[8, 8];
+        possibleAtacks = new bool[8, 8];
+        RookMovement();
     }
 
-    public void RookMovement(bool[,] _moves)
+    public void RookMovement()
     {
-        for (int i = 0; i < hits.Length; i++)
-            hits[i] = true;
+        
 
- 
         int newX = 0;
         int newY = 0;
 
         bool condition_left, condition_right, condition_up, condition_down;
 
-       
-        
 
-        int color = isWhite ? 1 : -1;
+        for (int i = 0; i < hits.Length; i++)
+            hits[i] = true;
 
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i <= Move_limit; i++)
         {
             newX = CurrentX - (color * i);
             newY = CurrentY;
@@ -38,7 +34,8 @@ public class Rook : ChessMan
 
             if (condition_left && hits[0]) //ruch w lewo
             {
-                CheckMove(this,_moves,newX,newY, 0);
+        
+                CheckMove(newX, newY, 0);
                
             }
             
@@ -48,7 +45,7 @@ public class Rook : ChessMan
 
             if (condition_right && hits[1])  //ruch w prawo
             {
-                CheckMove(this, _moves, newX, newY, 1);
+                CheckMove(newX, newY, 1);
             }
 
             newX = CurrentX;
@@ -57,7 +54,7 @@ public class Rook : ChessMan
 
             if (condition_up && hits[2]) //ruch w górę
             {
-                CheckMove(this, _moves, newX, newY, 2);
+                CheckMove(newX, newY, 2);
             }
 
             newX = CurrentX;
@@ -66,7 +63,7 @@ public class Rook : ChessMan
 
             if (condition_down && hits[3]) //ruch w dół
             {
-                CheckMove(this, _moves, newX, newY, 3);
+                CheckMove(newX, newY, 3);
             }
 
 
@@ -74,22 +71,7 @@ public class Rook : ChessMan
 
     }
 
-    private void CheckMove(ChessMan current_chess, bool[,] arr, int _newX, int _newY,int hit)
-    {
-
-        ChessMan c;
-        c = BoardManager.Instance.ChessMens[_newX, _newY];
-        if (c == null)
-            arr[_newX, _newY] = true;
-        if (c != null && current_chess.isWhite == c.isWhite) //jeśli na lini jest sojusznik nie można ruszyć dalej
-            hits[hit] = false;
-        if (c != null && current_chess.isWhite != c.isWhite) //jeśli na lini jest przeciwnik zbij go
-        {
-            arr[_newX, _newY] = true;
-            hits[hit] = false;
-        }
-
-    }
+ 
 
 
 

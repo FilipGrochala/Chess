@@ -5,18 +5,22 @@ using UnityEngine;
 public class Pawn : ChessMan
 {
     
-
-    public override bool[,] PossibleMove()
+   
+   
+    public override void UpdateMove()
     {
         ChessMan c1, c2;
 
-        bool[,] moves = new bool[8, 8];
+        possibleMoves = new bool[8, 8];
+        possibleAtacks = new bool[8, 8];
 
-        bool condition_left = isWhite ? (CurrentX != 0 && CurrentY != 7) : (CurrentX != 0 && CurrentY != 0);//warunki ograniczające pole  nbica
-        bool condition_right = isWhite ? (CurrentX != 7 && CurrentY != 7) : (CurrentX != 7 && CurrentY != 0);
+        bool condition_left = isWhite ? (CurrentX != 0 && CurrentY != 7) : (CurrentX != 0 && CurrentY != 0); //warunki ograniczające pole  nbica
+        bool condition_right = isWhite ? (CurrentX != 7 && CurrentY != 7) : (CurrentX != 7 && CurrentY != 0); 
         
 
-        int color = isWhite ? 1 : -1; //ustalanie mnożnika przy ustalaniu pozycji
+          //ustalanie mnożnika przy ustalaniu pozycji
+
+        CheckIsEnd();
 
         //BICIA
         #region
@@ -25,7 +29,7 @@ public class Pawn : ChessMan
             {
                 c1 = BoardManager.Instance.ChessMens[CurrentX - color, CurrentY + color];
                 if (c1 != null && this.isWhite != c1.isWhite)
-                    moves[CurrentX - color, CurrentY + color] = true;
+                    possibleAtacks[CurrentX - color, CurrentY + color] = true;
 
             }
 
@@ -34,7 +38,7 @@ public class Pawn : ChessMan
             {
                 c1 = BoardManager.Instance.ChessMens[CurrentX + color, CurrentY + color];
                 if (c1 != null && this.isWhite != c1.isWhite)
-                    moves[CurrentX + color, CurrentY + color] = true;
+                    possibleAtacks[CurrentX + color, CurrentY + color] = true;
             }
         
         #endregion
@@ -45,7 +49,7 @@ public class Pawn : ChessMan
         {
             c1 = BoardManager.Instance.ChessMens[CurrentX, CurrentY + color];
             if (c1 == null)
-                moves[CurrentX, CurrentY + color] = true;
+                possibleMoves[CurrentX, CurrentY + color] = true;
         }
 
         
@@ -55,18 +59,20 @@ public class Pawn : ChessMan
             c2 = BoardManager.Instance.ChessMens[CurrentX, CurrentY + (2*color)];
             if (c1 == null && c2 == null)
             {
-                moves[CurrentX, CurrentY + (2 * color)] = true;
+                possibleMoves[CurrentX, CurrentY + (2 * color)] = true;
             }
         }
 
+
+
+        
+
+        
        
-
-        #endregion
-
-        return moves;
        
-
             
     }
+    #endregion
+  
 
 }

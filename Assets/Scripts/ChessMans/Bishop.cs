@@ -4,45 +4,36 @@ using UnityEngine;
 
 public class Bishop : ChessMan
 {
+    //schemat ruchów podobny do końca w prawdziwych szachach
 
-    bool[] hits = new bool[4];
-
-
-
-    public override bool[,] PossibleMove()
+    public override void UpdateMove()
     {
-
-
-        bool[,] moves = new bool[8, 8];
-
-        BishopMovement(moves);
-
-        return moves;
-
+        PossibleMove = new bool[8, 8];
+        PossibleAtacks = new bool[8, 8];
+        BishopMovement();
     }
 
-    public void BishopMovement(bool[,] _moves)
+    public void BishopMovement() //aktualizuje tablice możliwych ruchów i ataków
     {
-        ChessMan c1;
 
-        bool condition_left_up, condition_right_up, condition_left_down, contidion_right_down;
-
-        for (int i = 0; i < hits.Length; i++)
+        for (int i = 0; i < hits.Length; i++) 
             hits[i] = true;
 
-        int color = isWhite ? 1 : -1;
+        bool condition_left_up, condition_right_up, condition_left_down, contidion_right_down; //warucki które określają czy dany punkt nie jest poza planszą
+
+        
         int newX, newY;
 
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i <= Move_limit; i++)
         {
-            newX = CurrentX - (i * color);
+            newX = CurrentX - (i * color); 
             newY = CurrentY + (i * color);
             condition_left_up = isWhite ? (newX >= 0 && newY <= 7) : (newX <= 7 && newY >= 0);
 
             if (condition_left_up && hits[0]) //ruch w lewo
             {
 
-                CheckMove(this, _moves, newX, newY, 0);
+                CheckMove(newX, newY, 0);
             }
 
             newX = CurrentX + (i * color);
@@ -53,7 +44,7 @@ public class Bishop : ChessMan
             {
 
 
-                CheckMove(this, _moves, newX, newY, 1);
+                CheckMove(newX, newY, 1);
             }
             newX = CurrentX - (i * color);
             newY = CurrentY - (i * color);
@@ -61,17 +52,17 @@ public class Bishop : ChessMan
 
             if (condition_left_down && hits[2]) //ruch w górę
             {
-                CheckMove(this, _moves, newX, newY, 2);
+                CheckMove(newX, newY, 2);
             }
 
 
             newX = CurrentX + (i * color);
             newY = CurrentY - (i * color);
-            contidion_right_down = isWhite ? (CurrentX != 7 && CurrentY != 0 && newX <= 7 && newY >= 0) : (CurrentX != 0 && CurrentY != 7 && newX >= 0 && newY <= 7);
+            contidion_right_down = isWhite ? (newX <= 7 && newY >= 0) : ( newX >= 0 && newY <= 7);
 
             if (contidion_right_down && hits[3]) //ruch w dół
             {
-                CheckMove(this, _moves, newX, newY, 3);
+                CheckMove( newX, newY, 3);
             }
 
 
@@ -82,20 +73,4 @@ public class Bishop : ChessMan
 
     }
 
-    private void CheckMove(ChessMan current_chess, bool[,] arr, int _newX, int _newY, int hit)
-    {
-
-        ChessMan c;
-        c = BoardManager.Instance.ChessMens[_newX, _newY];
-        if (c == null)
-            arr[_newX, _newY] = true;
-        if (c != null && current_chess.isWhite == c.isWhite) //jeśli na lini jest sojusznik nie można ruszyć dalej
-            hits[hit] = false;
-        if (c != null && current_chess.isWhite != c.isWhite) //jeśli na lini jest przeciwnik zbij go
-        {
-            arr[_newX, _newY] = true;
-            hits[hit] = false;
-        }
-
-    }
 }

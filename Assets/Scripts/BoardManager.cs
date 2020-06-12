@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UnityEngine.SceneManagement;
 
 public class BoardManager : MonoBehaviour
 {
 
-
-
     public static BoardManager Instance { get; set; }
-    private bool[,] allowedMoves;
 
-    public ChessMan[,] ChessMens { get; set; }
-    public ChessMan SelectedChessman;
+
+    public ChessMan[,] ChessMens { get; set; } //tablica wszystkich pionów
+    public ChessMan SelectedChessman; //wybrany pion
 
    
 
@@ -22,10 +21,12 @@ public class BoardManager : MonoBehaviour
 
 
     public bool isWhiteTurn = true; //czyja kolej?
-    int number_of_move = 0;
 
-    [SerializeField]
+    int number_of_move = 0; //który ruch gracz wykonał (co dwa ruchy zmienia się aktywny graCZ)
+
+    [SerializeField]      //TALIE
     CardManager WhiteDeck;
+
     [SerializeField]
     CardManager BlackDeck;
 
@@ -34,14 +35,15 @@ public class BoardManager : MonoBehaviour
     {
         Instance = this;
         ChessMens = new ChessMan[8, 8];
+
         WhiteDeck.UpdateSpawn(ChessMens);
         BlackDeck.UpdateSpawn(ChessMens);
+       
     }
+
     private void Update()
     {
-        UpdateSelection();
-        DrawChessboard();
-       
+        UpdateSelection(); //co klatkę gra sprawdza na jakie pole kliknął gracz
 
         if (Input.GetMouseButtonDown(0)) //wduszenie lewego przycisku myszy
         {
@@ -51,7 +53,7 @@ public class BoardManager : MonoBehaviour
                 {
                     try
                     {
-                        SelectChessman(selectedX, selectedY);
+                        SelectChessman(selectedX, selectedY); //zmiana wybranego piona 
                     }
                     catch (Exception e)
                     {
@@ -60,7 +62,14 @@ public class BoardManager : MonoBehaviour
                 }
                 else //jeśli wcześniej wybrano piona rusz nim na wybrane pole
                 {
-                    MoveChessman(selectedX, selectedY);
+                    try
+                    {
+                        MoveChessman(selectedX, selectedY); //rusz wybrany pion na daną pozycję 
+                    }
+                    catch(Exception e)
+                    {
+
+                    }
                 }
 
             }
@@ -68,45 +77,33 @@ public class BoardManager : MonoBehaviour
 
     }
 
-    private void MoveChessman(int x, int y)
+    private void UpdateSelection()
     {
-        if (allowedMoves[x, y]) // można wykonać taki ruch?
+        if (!Camera.main) //jeśli brakuje kamery nic się nie dzieje
+            return;
+
+        RaycastHit hit;
+
+        //warunek niżej, Raycast "wypuszcza" promień z kamery do miejsca gdzie kliknął gracz i zwraca do hit to na co promień natrafił (jeżeli nie trafił na nic zwraca false)
+        if (Physics.Raycast(   
+            Camera.main.ScreenPointToRay(Input.mousePosition),
+            out hit,
+            25.0f, //długość promienia
+            LayerMask.GetMask("Board"))) //warunek określający nad jakim polem gracz ma umieszczoną myszkę
         {
-            ChessMan target = ChessMens[x, y];
-
-
-            if (target != null && target.isWhite != isWhiteTurn) //czy na wybranym polu jest figura i czy należy do gracza?
-            {
-                KillChessMan(target);
-            }
-
-            ChessMens[SelectedChessman.CurrentX, SelectedChessman.CurrentY] = null; //wybrany pion 'znika' z aktualnej pozycji
-            SelectedChessman.transform.position = GetTileCenter(x, y);
-            SelectedChessman.SetPosition(x, y);
-            ChessMens[x, y] = SelectedChessman;
-            UpdateMove();
-
-            if (SelectedChessman.firstmove) //wykonanie pierwszego ruchu potrzebne przy pionach
-                SelectedChessman.firstmove = false;
-
-
-        }
-        BoardHighlitghs.Instance.HideAll();
-        SelectedChessman = null; //klinięcie w inne niż możliwe miejsce anuluje wybór
-
-
-    }
-
-    private void KillChessMan(ChessMan target)
-    {
-        if (target.GetType() == typeof(King)) //jeśli to król zakończ grę
-        {
-            Endgame();
             
+            selectedX = (int)hit.point.x;
+            selectedY = (int)hit.point.z;
+            BoardHighlitghs.Instance.HighlightAllowedMove(selectedX, selectedY);
         }
-        //usunięcie z listy aktywnych figur
-        Destroy(target.gameObject); //zniszczenie figury
-    }
+        else
+        { 
+            BoardHighlitghs.Instance.DestroySelection();
+            selectedX = -1;
+            selectedX = -1;
+        }
+
+    } //gra sprawdza na jakie pole kliknął gracz
 
     private void SelectChessman(int x, int y)
     {
@@ -115,61 +112,95 @@ public class BoardManager : MonoBehaviour
         if (ChessMens[x, y].isWhite != isWhiteTurn) //sprawdzenie czy pion ma kolor danego gracza
             return;
 
-        SelectedChessman = ChessMens[x, y];
+        BoardHighlitghs.Instance.HideAll();
+        SelectedChessman = ChessMens[x, y]; //zmiana wybranego piona
+        ChessMens[x, y].UpdateMove(); //sprawdzenie jakie ruchy,ataki są dozwolone
 
-        allowedMoves = ChessMens[x, y].PossibleMove();
-        BoardHighlitghs.Instance.HighlightAllowedMoves(allowedMoves);
+        BoardHighlitghs.Instance.HighlightAllowedMoves(SelectedChessman.PossibleMove, SelectedChessman.PossibleAtacks); //podświetlenie planczy
 
 
-    }
 
-    private void UpdateSelection()
+    } 
+
+    private void MoveChessman(int x, int y)
     {
-        if (!Camera.main)
-            return;
 
-        RaycastHit hit;
+        ChessMan target = ChessMens[x, y];
 
-        if (Physics.Raycast(
-            Camera.main.ScreenPointToRay(Input.mousePosition),
-            out hit,
-            25.0f,
-            LayerMask.GetMask("ChessPlane"))) //warunek określający nad jakim polem gracz ma umieszczoną myszkę
+        if (SelectedChessman.PossibleMove[x, y]) // można wykonać taki ruch?
         {
-            selectedX = (int)hit.point.x;
-            selectedY = (int)hit.point.z;
+
+            ChessMens[SelectedChessman.CurrentX, SelectedChessman.CurrentY] = null; //wybrany pion 'znika' z aktualnej pozycji
+            SelectedChessman.transform.position = GetTileCenter(x, y); 
+            SelectedChessman.SetPosition(x, y);
+            ChessMens[x, y] = SelectedChessman;
+            UpdateMove();
+           
+
+            if (SelectedChessman.firstmove) //wykonanie pierwszego ruchu potrzebne przy pionach
+                SelectedChessman.firstmove = false;
+
+
         }
-        else
+        if (SelectedChessman.PossibleAtacks[x,y]) //można atakować
         {
-            selectedX = -1;
-            selectedX = -1;
-        }
-
-    }
-    private void DrawChessboard() //pomocnicza funkcja rysująca pole
-    {
-        Vector3 width_line = Vector3.right * 8;
-        Vector3 height_line = Vector3.forward * 8;
-
-        for (int i = 0; i <= 8; i++)
-        {
-            Vector3 start = Vector3.forward * i;
-            Debug.DrawLine(start, start + width_line);
-            for (int j = 0; j <= 8; j++)
+            if (SelectedChessman.GetComponent<Distance>() == null) //jeśli pion nie atakuje z dystasnu musi przemieścić się w kierunku przeciwnika
             {
-                start = Vector3.right * i;
-                Debug.DrawLine(start, start + height_line);
-            }
-        }
+                int[] newPositions = CalculateNewPosition(x, y, SelectedChessman.CurrentX, SelectedChessman.CurrentY); //funkcja sprawia że pion zostaję na pozycji "przed" celem 
 
-        if (selectedX >= 0 && selectedY >= 0) //coś zaznaczono
-        {
-            Debug.DrawLine(
-                Vector3.forward * selectedY + Vector3.right * selectedX,
-                Vector3.forward * (selectedY + 1) + Vector3.right * (selectedX + 1));
+                ChessMens[SelectedChessman.CurrentX, SelectedChessman.CurrentY] = null; //wybrany pion 'znika' z aktualnej pozycji
+                SelectedChessman.transform.position = GetTileCenter(newPositions[0], newPositions[1]);
+                SelectedChessman.SetPosition(newPositions[0], newPositions[1]);
+
+                ChessMens[newPositions[0], newPositions[1]] = SelectedChessman;
+
+            }
+
+            AtackChessMan(target); 
+
+            UpdateMove();
+
+            if (SelectedChessman.firstmove) //wykonanie pierwszego ruchu potrzebne przy pionach
+                SelectedChessman.firstmove = false;
+
         }
+        BoardHighlitghs.Instance.HideAll();
+        SelectedChessman = null; //klinięcie w inne niż możliwe miejsce anuluje wybór
+
+
     }
 
+    private void AtackChessMan(ChessMan target)
+    {
+
+        target.GetComponent<Animator>().Play("take_damage");
+
+        int damage = target.Hp - SelectedChessman.Dmg; //zmniejszenie HP
+
+        if (damage <= 0)
+            KillChessMan(target); 
+        else
+            target.Hp = damage;
+        
+    }
+
+    private void KillChessMan(ChessMan target)
+    {
+        if (target.GetType() == typeof(King)) //jeśli to król zakończ grę
+        {
+            GameManager.instance.Winner = isWhiteTurn ? "White" : "Black";
+            GameManager.instance.Condition = "kiling the God";
+            SceneManager.LoadScene("End_Game");
+
+        }
+        //usunięcie z listy aktywnych figur
+        Destroy(target.gameObject); //zniszczenie figury, automatycznie sniknie też z listy
+    }
+
+  
+
+   
+   
     
 
 
@@ -197,12 +228,35 @@ public class BoardManager : MonoBehaviour
         
         }
 
-    private void Endgame()
+  
+     private int[] CalculateNewPosition(int newX,int newY,int CurrentX,int CurrentY) //funkcja potrzebna przy ataku która ustawia pion jedno pole "przed" celem w zależności od strony ataku
     {
-     
-        Debug.Log("Wygrana!");
+        int[] results = new int[2];
+
+
+        if (newX - CurrentX < 0) //poruszam się w lewo
+            results[0] = newX + 1;
+        if (newX - CurrentX > 0) //poruszam się w prawo
+            results[0] = newX - 1;
+        if (newX - CurrentX == 0) //nie poruszam się w osi x
+            results[0] = CurrentX;
+
+        if (newY - CurrentY < 0) //poruszam się w dół
+        {
+            results[1] = newY + 1;
+            
+        }
+        if (newY - CurrentY > 0) //poruszam się w górę
+        {
+            results[1] = newY - 1;
+
+        }
+        if (newY - CurrentY == 0) //nie poruszam się w osi y
+            results[1] = CurrentY;
+
+        return results;
+
     }
-    
 
 
 }

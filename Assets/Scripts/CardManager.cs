@@ -6,7 +6,8 @@ public class CardManager : MonoBehaviour
 {
     [SerializeField]
     bool isWhite;
-
+    
+    public Camera camera;
     public List<Card> deck;
 
     ChessMan[,] ChessMens;
@@ -16,14 +17,14 @@ public class CardManager : MonoBehaviour
  
     
 
-    private void Spawn(GameObject prefab, int x, int y)
+    private void Spawn(GameObject prefab, int x, int y) //tworzenie figury na planszy
     {
         if (ChessMens[x, y] == null) //jezeli na wybranym polu nie ma figuty
         {
             GameObject temp = Instantiate(prefab, GetTileCenter(x, y), Quaternion.Euler(0, 180, 0)) as GameObject; //tworzy obiekt na podstawie prefabu o określonej pozycji
             ChessMens[x, y] = temp.GetComponent<ChessMan>(); //zapisanie figury do tablicy figur
             ChessMens[x, y].SetPosition(x, y); //ustawienie pozycji figury
-            temp.transform.SetParent(transform);
+            temp.transform.parent = BoardManager.Instance.transform; 
         }
 
     }
@@ -58,7 +59,7 @@ public class CardManager : MonoBehaviour
 
     }
 
-    IEnumerator WaitForSpawn(Card card)
+    IEnumerator WaitForSpawn(Card card)  //funkcja kóra "czeka" aż gracz wybierzę pole do spawnu
     {
         while (true)
         {
